@@ -1,6 +1,7 @@
 import torch
 import datetime
-from diffusers import StableDiffusionPipeline, DPMSolverMultistepScheduler
+from diffusers import StableDiffusionPipeline, DPMSolverMultistepScheduler, LMSDiscreteScheduler
+from diffusers.models import AutoencoderKL
 
 
 # モデル設定
@@ -8,8 +9,11 @@ from diffusers import StableDiffusionPipeline, DPMSolverMultistepScheduler
 # 自由にDiffusionモデルを変更してください
 # ただしライセンスには注意してください
 # model_id = "andite/anything-v4.0"
-model_id = "CompVis/stable-diffusion-v1-4"
+# model_id = "CompVis/stable-diffusion-v1-4"
+model_id = "stablediffusionapi/anything-v5"
 
+# VAEの設定
+vae_id = "./vae/anythingv4_vae"
 
 # GPUチェック
 if torch.cuda.is_available():
@@ -20,10 +24,15 @@ else:
 # モデルの読み込み
 pipe = StableDiffusionPipeline.from_pretrained(model_id)
 
+# VAEの読み込み
+pipe.vae = AutoencoderKL.from_pretrained(vae_id)
+
+
 # スケジューラーの設定
 # ノイズスケジューラはいくつかあるので試してみてください
 # https://huggingface.co/docs/diffusers/api/schedulers/overview
-pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
+# pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
+pipe.scheduler = LMSDiscreteScheduler.from_config(pipe.scheduler.config)
 
 # デバイスの設定
 pipe = pipe.to(device)
