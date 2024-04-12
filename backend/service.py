@@ -1,18 +1,21 @@
 import torch
 import datetime
-from diffusers import StableDiffusionPipeline, DPMSolverMultistepScheduler, LMSDiscreteScheduler
+from diffusers import StableDiffusionPipeline, LMSDiscreteScheduler
 from diffusers.models import AutoencoderKL
 
 
 # モデル設定
-# https://huggingface.co/andite/anything-v4.0
+# https://huggingface.co/stablediffusionapi/anything-v5
 # 自由にDiffusionモデルを変更してください
 # ただしライセンスには注意してください
-# model_id = "andite/anything-v4.0"
-# model_id = "CompVis/stable-diffusion-v1-4"
 model_id = "stablediffusionapi/anything-v5"
 
+
 # VAEの設定
+# https://huggingface.co/xyn-ai/anything-v4.0/tree/main
+# anything-v4.0.vae.ptをLFSボタンでダウンロードしてください。
+# VAEは変換が必要なのでhttps://github.com/huggingface/diffusers/blob/main/scripts/convert_vae_pt_to_diffusers.pyのコードを使って変換してください。
+# python ./convert_vae_pt_to_diffusers.py --vae_pt_path ./vae/anything-v4.0.vae.pt --dump_path ./vae/anythingv4_vaeを実行してください。
 vae_id = "./vae/anythingv4_vae"
 
 # GPUチェック
@@ -25,14 +28,13 @@ else:
 pipe = StableDiffusionPipeline.from_pretrained(model_id)
 
 # VAEの読み込み
-pipe.vae = AutoencoderKL.from_pretrained(vae_id)
+# pipe.vae = AutoencoderKL.from_pretrained(vae_id)
 
 
 # スケジューラーの設定
 # ノイズスケジューラはいくつかあるので試してみてください
 # https://huggingface.co/docs/diffusers/api/schedulers/overview
-# pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
-pipe.scheduler = LMSDiscreteScheduler.from_config(pipe.scheduler.config)
+# pipe.scheduler = LMSDiscreteScheduler.from_config(pipe.scheduler.config)
 
 # デバイスの設定
 pipe = pipe.to(device)

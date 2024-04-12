@@ -2,3 +2,5 @@ myvenv
 outputs
 models
 __pycache__
+anything-v4.0.vae.pt
+diffusion_pytorch_model.safetensors
